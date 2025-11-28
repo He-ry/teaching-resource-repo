@@ -1,0 +1,131 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: tracker-server
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: qwen3:4b
+  data:
+    redis:
+      host: nas.hery.cloud
+      port: 6379
+      database: 0
+      password: redis.hery
+  datasource:
+    dynamic:
+      primary: master   # 这里指定主数据源名字
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://nas.hery.cloud:3306/code-tracker?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+          username: root
+          password: mysql.hery
+  main:
+    banner-mode: console
+  banner:
+    charset: UTF-8
+  # ElasticSearch
+  elasticsearch:
+    uris: http://nas.hery.cloud:9200
+    username: elastic
+    password: elastic.hery
+#  canal配置
+canal:
+  host: nas.hery.cloud
+  port: 11111
+  destination: code-tracker
+  username: canal
+  password: canal_password
+  subscribe: code-tracker.t_article
+# 数据源
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true      # 驼峰映射
+    cache-enabled: false                     # 是否启用二级缓存
+    call-setters-on-nulls: true              # 对 null 字段调用 setter
+    lazy-loading-enabled: false              # 是否开启延迟加载
+    default-statement-timeout: 30            # SQL 超时（秒）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 日志实现
+  # 全局配置
+  global-config:
+    banner: true                       # 是否打印 MyBatis-Plus LOGO
+    db-config:
+      id-type: ASSIGN_ID                     # 主键生成策略：AUTO, INPUT, ASSIGN_ID, ASSIGN_UUID, NONE
+      table-prefix: t_                  # 表名前缀
+      table-underline: true             # 开启下划线转驼峰
+      logic-delete-field: deleted       # 逻辑删除字段名
+      logic-delete-value: 1             # 已删除值
+      logic-not-delete-value: 0         # 未删除值
+# 自动建表
+auto-table:
+  enable: true                                # 是否开启自动建表
+  show-banner: true                           # 是否打印 banner
+  model-package: com.tracker.*.models.entity  # 指定实体类所在包路径
+  auto-build-database: true                   # 是否自动建表
+  init-data:
+    enable: true
+    base-path: classpath:sql
+  mysql:
+    table-default-charset: utf8mb4               # 表默认字符集
+    table-default-collation: utf8mb4_general_ci  # 表默认排序规则
+    column-default-charset: utf8mb4              # 列默认字符集
+    column-default-collation: utf8mb4_general_ci # 列默认排序规则
+
+# 数据翻译
+easy-trans:
+  is-enable-global: true
+  is-enable-redis: false
+
+# 配置接口文档
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  # SpringDoc 配置属性
+  configs:
+    title: 代码记录API文档
+    description: 代码记录接口文档
+    version: 1.0.0
+    author: Hery
+    url: https://github.com/code-tracker
+    email: admin@code-tracker.com
+    license: Apache License 2.0
+    license-url: https://www.apache.org/licenses/LICENSE-2.0
+
+knife4j:
+  enable: false
+logging:
+  level:
+    org.dromara.trans.listener.TransMessageListener: error
+
+############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: sa-token
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: false
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
+
+# Minio 配置
+minio:
+  endpoint: http://nas.hery.cloud:9000
+  bucketName: code-tracker
+  access-key: minio
+  secret-key: minio.hery
