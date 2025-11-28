@@ -1,4 +1,4 @@
-package com.tracker.framework.config.mybatis;
+package com.teach.config.mybatis;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;

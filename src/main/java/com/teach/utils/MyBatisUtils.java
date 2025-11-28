@@ -1,4 +1,4 @@
-package com.tracker.framework.utils;
+package com.teach.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.tracker.framework.domain.SortablePageParam;
-import com.tracker.framework.domain.SortingField;
+import com.teach.domain.pojo.SortablePageParam;
+import com.teach.domain.pojo.SortingField;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -29,7 +29,7 @@ public class MyBatisUtils {
 
     public static <T> Page<T> buildPage(SortablePageParam pageParam, Collection<SortingField> sortingFields) {
         // 页码 + 数量
-        Page<T> page = new Page<>(pageParam.getPageNo(), pageParam.getPageSize());
+        Page<T> page = new Page<>(pageParam.getPage(), pageParam.getPerPage());
         // 排序字段
         if (CollUtil.isNotEmpty(sortingFields)) {
             for (SortingField sortingField : sortingFields) {

@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResourceVO {
+public class PageResourceVO {
     /**
      * 分页情况
      */

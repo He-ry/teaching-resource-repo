@@ -1,4 +1,4 @@
-package com.tracker.framework.config.mybatis;
+package com.teach.config.mybatis;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -8,11 +8,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.github.yulichang.base.MPJBaseMapper;
-import com.tracker.framework.domain.PageResult;
-import com.tracker.framework.domain.SortablePageParam;
-import com.tracker.framework.domain.SortingField;
-import com.tracker.framework.utils.MyBatisUtils;
+import com.teach.domain.pojo.PageResult;
+import com.teach.domain.pojo.SortablePageParam;
+import com.teach.domain.pojo.SortingField;
+import com.teach.utils.MyBatisUtils;
 import org.apache.ibatis.annotations.Param;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +26,7 @@ public interface BaseMapperX<T> extends MPJBaseMapper<T> {
 
     default PageResult<T> selectPage(SortablePageParam pageParam, Collection<SortingField> sortingFields, @Param("ew") Wrapper<T> queryWrapper) {
         // 特殊：不分页，直接查询全部
-        if (SortablePageParam.PAGE_SIZE_NONE.equals(pageParam.getPageSize())) {
+        if (SortablePageParam.PAGE_SIZE_NONE.equals(pageParam.getPerPage())) {
             MyBatisUtils.addOrder(queryWrapper, sortingFields);
             List<T> list = selectList(queryWrapper);
             return new PageResult<>(list, (long) list.size());

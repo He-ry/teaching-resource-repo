@@ -1,4 +1,4 @@
-package com.tracker.framework.exception.enums;
+package com.teach.exception.enums;
 
 /**
  * @author He

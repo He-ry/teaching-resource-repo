@@ -1,14 +1,9 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
     name: tracker-server
-  ai:
-    ollama:
-      base-url: http://localhost:11434
-      chat:
-        model: qwen3:4b
   data:
     redis:
       host: nas.hery.cloud
@@ -21,26 +16,13 @@ spring:
       datasource:
         master:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://nas.hery.cloud:3306/code-tracker?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+          url: jdbc:mysql://nas.hery.cloud:3306/teaching-resource-repo?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
           username: root
           password: mysql.hery
   main:
     banner-mode: console
   banner:
     charset: UTF-8
-  # ElasticSearch
-  elasticsearch:
-    uris: http://nas.hery.cloud:9200
-    username: elastic
-    password: elastic.hery
-#  canal配置
-canal:
-  host: nas.hery.cloud
-  port: 11111
-  destination: code-tracker
-  username: canal
-  password: canal_password
-  subscribe: code-tracker.t_article
 # 数据源
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
@@ -91,12 +73,12 @@ springdoc:
     path: /v3/api-docs
   # SpringDoc 配置属性
   configs:
-    title: 代码记录API文档
-    description: 代码记录接口文档
+    title: 教学信息资源库
+    description: 教学信息资源库
     version: 1.0.0
     author: Hery
-    url: https://github.com/code-tracker
-    email: admin@code-tracker.com
+    url:
+    email: admin@edu.com
     license: Apache License 2.0
     license-url: https://www.apache.org/licenses/LICENSE-2.0
 

@@ -16,14 +16,14 @@ import java.time.LocalDateTime;
 @TableName("t_file")
 @Schema(name = "TFile", description = "文件表")
 @JsonIgnoreProperties(value = "transMap")
-public class TFile implements Serializable, TransPojo {
+public class FileDO implements Serializable, TransPojo {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Schema(description = "文件ID")
     @TableId("id")
-    private String id;
+    private Long id;
 
     @Schema(description = "文件Hash")
     @TableField("hash")

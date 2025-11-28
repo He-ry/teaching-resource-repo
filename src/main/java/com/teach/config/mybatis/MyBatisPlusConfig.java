@@ -1,10 +1,9 @@
-package com.tracker.framework.config.mybatis;
+package com.teach.config.mybatis;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.tracker.framework.domain.pojo.BaseDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
@@ -16,7 +15,7 @@ import java.util.Objects;
 
 @Configuration
 @MapperScan(
-        basePackages = "com.tracker",   // 扫描根包，递归扫描所有子模块下的 Mapper
+        basePackages = "com.teach",   // 扫描根包，递归扫描所有子模块下的 Mapper
         annotationClass = Mapper.class, // 只扫描加了 @Mapper 的接口
         lazyInitialization = "true"
 )
@@ -40,31 +39,15 @@ public class MyBatisPlusConfig {
         return new MetaObjectHandler() {
             @Override
             public void insertFill(MetaObject metaObject) {
-                if (Objects.nonNull(metaObject) && metaObject.getOriginalObject() instanceof BaseDO baseDO) {
-
-                    LocalDateTime current = LocalDateTime.now();
-                    // 创建时间为空，则以当前时间为插入时间
-                    if (Objects.isNull(baseDO.getCreateTime())) {
-                        baseDO.setCreateTime(current);
+                if (Objects.nonNull(metaObject)) {
+                    Object createdAt = getFieldValByName("createdAt", metaObject);
+                    if (Objects.isNull(createdAt)) {
+                        setFieldValByName("createdAt", LocalDateTime.now(), metaObject);
                     }
-                    // 更新时间为空，则以当前时间为更新时间
-                    if (Objects.isNull(baseDO.getUpdateTime())) {
-                        baseDO.setUpdateTime(current);
-                    }
-
+                    Object modifier = getFieldValByName("createdBy", metaObject);
                     Object userId = StpUtil.isLogin() ? StpUtil.getLoginId() : null;
-
-                    // 当前登录用户不为空，创建人为空，则当前登录用户为创建人
-                    if (Objects.nonNull(userId) && Objects.isNull(baseDO.getCreatedBy())) {
-                        baseDO.setCreatedBy(userId.toString());
-                    } else {
-                        baseDO.setCreatedBy("");
-                    }
-                    // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
-                    if (Objects.nonNull(userId) && Objects.isNull(baseDO.getUpdatedBy())) {
-                        baseDO.setUpdatedBy(userId.toString());
-                    } else {
-                        baseDO.setUpdatedBy("");
+                    if (Objects.nonNull(userId) && Objects.isNull(modifier)) {
+                        setFieldValByName("createdBy", userId.toString(), metaObject);
                     }
                 }
             }
@@ -72,16 +55,16 @@ public class MyBatisPlusConfig {
             @Override
             public void updateFill(MetaObject metaObject) {
                 // 更新时间为空，则以当前时间为更新时间
-                Object modifyTime = getFieldValByName("updateTime", metaObject);
+                Object modifyTime = getFieldValByName("updatedAt", metaObject);
                 if (Objects.isNull(modifyTime)) {
-                    setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
+                    setFieldValByName("updatedAt", LocalDateTime.now(), metaObject);
                 }
 
                 // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
-                Object modifier = getFieldValByName("updated_by", metaObject);
+                Object modifier = getFieldValByName("updatedBy", metaObject);
                 Object userId = StpUtil.isLogin() ? StpUtil.getLoginId() : null;
                 if (Objects.nonNull(userId) && Objects.isNull(modifier)) {
-                    setFieldValByName("updated_by", userId.toString(), metaObject);
+                    setFieldValByName("updatedBy", userId.toString(), metaObject);
                 }
             }
         };

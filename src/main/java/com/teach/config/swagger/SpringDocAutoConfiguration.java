@@ -1,4 +1,4 @@
-package com.tracker.framework.config.swagger;
+package com.teach.config.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -98,7 +98,7 @@ public class SpringDocAutoConfiguration {
      */
     @Bean
     public GroupedOpenApi allGroupedOpenApi() {
-        return buildGroupedOpenApi("全部模块", "com.tracker");
+        return buildGroupedOpenApi("全部模块", "com.teach");
     }
 
 

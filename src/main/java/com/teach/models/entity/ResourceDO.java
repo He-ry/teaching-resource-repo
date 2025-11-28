@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @TableName("t_resource")
 @Schema(name = "TResource", description = "资源表")
 @JsonIgnoreProperties(value = "transMap")
-public class TResource implements Serializable, TransPojo {
+public class ResourceDO implements Serializable, TransPojo {
 
     @Serial
     private static final long serialVersionUID = 1L;

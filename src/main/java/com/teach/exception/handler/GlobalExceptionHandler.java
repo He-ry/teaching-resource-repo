@@ -1,18 +1,19 @@
-package com.tracker.framework.exception.handler;
+package com.teach.exception.handler;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import com.tracker.framework.domain.Result;
-import com.tracker.framework.exception.ServiceException;
+import cn.hutool.core.util.StrUtil;
+import com.teach.domain.pojo.Result;
+import com.teach.exception.ServiceException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Objects;
 
-import static com.tracker.framework.exception.enums.StatusCodeEnum.*;
+import static com.teach.exception.enums.StatusCodeEnum.*;
 
 
 /**
@@ -73,10 +74,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
     public Result<?> handleValidationException(ConstraintViolationException e) {
-//        if (!StringUtils.isEmpty(e.getMessage())) {
-//            return Result.fail(VALID_ERROR.getCode(),e.getConstraintViolations().toString());
-//        }
-        return Result.fail(VALID_ERROR);
+        if (StrUtil.isNotBlank(e.getMessage())) {
+            return Result.fail(VALID_ERROR.getCode(),e.getConstraintViolations().toString());
+        }
+        return Result.fail(VALID_ERROR.getMsg());
     }
 
     /**

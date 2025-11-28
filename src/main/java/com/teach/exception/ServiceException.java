@@ -1,9 +1,9 @@
-package com.tracker.framework.exception;
+package com.teach.exception;
 
 
-import static com.tracker.framework.exception.enums.StatusCodeEnum.FAIL;
+import static com.teach.exception.enums.StatusCodeEnum.FAIL;
 
-public class ServiceException extends RuntimeException{
+public class ServiceException extends RuntimeException {
     /**
      * 返回失败状态码
      */

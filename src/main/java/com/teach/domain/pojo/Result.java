@@ -1,4 +1,4 @@
-package com.teach.domain;
+package com.teach.domain.pojo;
 
 import com.teach.exception.enums.StatusCodeEnum;
 import com.teach.exception.enums.StatusCodeProvider;

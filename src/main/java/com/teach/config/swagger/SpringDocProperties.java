@@ -1,4 +1,4 @@
-package com.tracker.framework.config.swagger;
+package com.teach.config.swagger;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Swagger 配置属性
  *
- * @author 芋道源码
  */
 @ConfigurationProperties("springdoc.configs")
 @Data

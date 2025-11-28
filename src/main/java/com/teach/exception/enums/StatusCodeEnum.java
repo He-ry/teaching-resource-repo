@@ -1,4 +1,4 @@
-package com.tracker.framework.exception.enums;
+package com.teach.exception.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public enum StatusCodeEnum implements StatusCodeProvider {
     /**
      * 操作成功
      */
-    SUCCESS(200, "操作成功"),
+    SUCCESS(0, "操作成功"),
 
     /**
      * 参数错误

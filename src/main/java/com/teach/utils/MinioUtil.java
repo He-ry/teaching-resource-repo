@@ -1,7 +1,7 @@
-package com.tracker.framework.utils;
+package com.teach.utils;
 
 import cn.hutool.core.util.StrUtil;
-import com.tracker.framework.config.minio.MinioConfig;
+import com.teach.config.minio.MinioConfig;
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.messages.DeleteError;
@@ -9,6 +9,7 @@ import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.teach.domain;
+package com.teach.domain.pojo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
