@@ -4,6 +4,7 @@ import com.teach.domain.pojo.PageResult;
 import com.teach.domain.pojo.Result;
 import com.teach.domain.vo.file.FileVO;
 import com.teach.domain.vo.file.ImageFileUploadVO;
+import com.teach.domain.vo.file.VideoFileUploadVO;
 import com.teach.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +39,7 @@ public class ImageController {
     @PostMapping("/upload-video")
     @Operation(summary = "视频上传")
     public HashMap<String, Object> createFileVideo(@RequestParam("wangeditor-uploaded-video") MultipartFile file) {
-        ImageFileUploadVO res = fileService.createFile(file);
+        VideoFileUploadVO res = fileService.createVideoFile(file);
         HashMap<String, Object> map = new HashMap<>();
         map.put("errno", 0);
         map.put("data", res);
