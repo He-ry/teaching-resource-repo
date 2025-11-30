@@ -8,8 +8,8 @@
         <!--  lookup parent from repository  -->
     </parent>
     <groupId>com.teach.app</groupId>
-    <artifactId>teach</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>teaching-resource-repo</artifactId>
+    <version>1.0</version>
     <name>teaching-resource-repo</name>
     <description>teaching-resource-repo</description>
     <url/>

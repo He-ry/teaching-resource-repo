@@ -17,8 +17,8 @@ spring:
         master:
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://nas.hery.cloud:3306/teaching-resource-repo?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
-          username: root
-          password: mysql.hery
+          username: teaching-resource-repo
+          password: 123456
   main:
     banner-mode: console
   banner:
