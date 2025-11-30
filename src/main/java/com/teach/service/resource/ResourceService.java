@@ -3,6 +3,7 @@ package com.teach.service.resource;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.teach.domain.dto.resource.ResourceSaveDTO;
 import com.teach.domain.vo.resource.PageResourceVO;
+import com.teach.domain.vo.resource.ResourceSuggestVO;
 import com.teach.domain.vo.resource.ResourceVO;
 import com.teach.models.entity.ResourceDO;
 import jakarta.validation.Valid;
@@ -24,4 +25,6 @@ public interface ResourceService extends IService<ResourceDO> {
     PageResourceVO getResourceList(Integer page, Integer pageSize, String type, String subType, String subSubType, String search, String sortBy, String sortOrder);
 
     Integer viewResource(Long id);
+
+    ResourceSuggestVO resourceSuggest(String q, String limit);
 }

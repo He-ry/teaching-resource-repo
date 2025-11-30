@@ -2,9 +2,10 @@ package com.teach.controller;
 
 import com.teach.domain.pojo.Result;
 import com.teach.domain.dto.resource.ResourceSaveDTO;
+import com.teach.domain.vo.IdVO;
 import com.teach.domain.vo.resource.PageResourceVO;
+import com.teach.domain.vo.resource.ResourceSuggestVO;
 import com.teach.domain.vo.resource.ResourceVO;
-import com.teach.models.entity.ResourceDO;
 import com.teach.service.resource.ResourceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Tag(name = "资源管理")
@@ -40,17 +42,17 @@ public class ResourceController {
     }
 
     @PostMapping()
-    @Operation(summary = "创建资源")
-    public Result<Long> createResource(@Valid @RequestBody ResourceSaveDTO dto) {
-        return Result.success(resourceService.createResource(dto));
+    @Operation(summary = "创建或更新资源")
+    public Result<IdVO> createResource(@Valid @RequestBody ResourceSaveDTO dto) {
+        return Result.success(new IdVO(resourceService.createResource(dto)));
     }
 
     @DeleteMapping("/{resource_id}")
     @Operation(summary = "删除资源")
     @Parameter(name = "id", description = "资源ID", required = true)
-    public Result<Boolean> deleteResource(@PathVariable(name = "resource_id") Long id) {
+    public Result<Object> deleteResource(@PathVariable(name = "resource_id") Long id) {
         resourceService.deleteResource(id);
-        return Result.success(true);
+        return Result.success(new HashMap<>());
     }
 
     @DeleteMapping("/delete-list")
@@ -68,9 +70,20 @@ public class ResourceController {
 
     @GetMapping("/{resource_id}/view")
     @Operation(summary = "增加浏览量")
-    public Result<Integer> viewResource(@PathVariable("resource_id") Long id) {
+    public Result<HashMap<String, Integer>> viewResource(@PathVariable("resource_id") Long id) {
         Integer res = resourceService.viewResource(id);
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("view_count", res);
+        return Result.success(map);
+    }
+
+
+    @GetMapping("/search/suggest")
+    @Operation(summary = "搜索建议")
+    public Result<ResourceSuggestVO> resourceSuggest(@RequestParam String q, @RequestParam String limit) {
+        ResourceSuggestVO res = resourceService.resourceSuggest(q, limit);
         return Result.success(res);
     }
+
 
 }

@@ -9,6 +9,7 @@ import com.teach.config.mybatis.LambdaQueryWrapperX;
 import com.teach.domain.bo.ResourceTypeBo;
 import com.teach.domain.dto.resource.ResourceSaveDTO;
 import com.teach.domain.vo.resource.PageResourceVO;
+import com.teach.domain.vo.resource.ResourceSuggestVO;
 import com.teach.domain.vo.resource.ResourceVO;
 import com.teach.exception.ServiceException;
 import com.teach.models.entity.ResourceDO;
@@ -39,7 +40,7 @@ public class ResourceServiceImpl  extends ServiceImpl<ResourceMapper, ResourceDO
         obj.setType(dto.getType().getType());
         obj.setSubType(dto.getType().getSubType());
         obj.setSubSubType(dto.getType().getSubSubType());
-        if (dto.getId() == 0L) {
+        if (dto.getId() == null || dto.getId() == 0L) {
             obj.setId(null);
             resourceMapper.insert(obj);
             return obj.getId();
@@ -179,6 +180,22 @@ public class ResourceServiceImpl  extends ServiceImpl<ResourceMapper, ResourceDO
         return resource.getViewCount();
     }
 
+    @Override
+    public ResourceSuggestVO resourceSuggest(String q, String limit) {
+        ResourceSuggestVO vo = new ResourceSuggestVO();
+        LambdaQueryWrapperX<ResourceDO> query = new LambdaQueryWrapperX<>();
+        query.select(ResourceDO::getId, ResourceDO::getTitle, ResourceDO::getDescription, ResourceDO::getViewCount);
+        query.and(StrUtil.isNotBlank(q),  item -> item.like(ResourceDO::getTitle, q)
+                        .or()
+                        .like(ResourceDO::getDescription, q)
+                );
+        query.last("limit " + (StrUtil.isBlank(limit) ? 10 : limit));
+        List<ResourceDO> resourceDOS = baseMapper.selectList(query);
+        List<ResourceSuggestVO.Resources> resources = BeanUtil.copyToList(resourceDOS, ResourceSuggestVO.Resources.class);
+        vo.setResources(resources);
+        vo.setCount(resourceDOS.size());
+        return vo;
+    }
     private String getIconByType(String type) {
         return switch (type) {
             case "institutional_norm" -> "mdi--file-document";

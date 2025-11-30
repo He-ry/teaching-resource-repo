@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 import org.dromara.core.trans.vo.TransPojo;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @TableName("t_file")
 @Schema(name = "TFile", description = "文件表")
 @JsonIgnoreProperties(value = "transMap")
@@ -35,7 +37,11 @@ public class FileDO implements Serializable, TransPojo {
 
     @Schema(description = "文件大小 (MB)")
     @TableField("size")
-    private Double size;
+    private Long size;
+
+    @Schema(description = "类型")
+    @TableField("mime_type")
+    private String mimeType;
 
     @Schema(description = "时长")
     @TableField("duration")

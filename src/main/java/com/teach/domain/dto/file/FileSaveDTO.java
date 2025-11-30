@@ -7,7 +7,7 @@ import lombok.Data;
 public class FileSaveDTO {
 
     @Schema(description = "文件ID")
-    private Long id;
+    private String id;
 
     @Schema(description = "文件Hash")
     private String hash;

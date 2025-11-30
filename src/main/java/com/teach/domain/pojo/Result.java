@@ -24,7 +24,7 @@ public class Result<T> implements Serializable {
     /**
      * 响应消息
      */
-    private String msg;
+    private String message;
 
     /**
      * 响应数据
@@ -34,24 +34,24 @@ public class Result<T> implements Serializable {
 
     public Result() {
         this.code = StatusCodeEnum.SUCCESS.getCode();
-        this.msg = StatusCodeEnum.SUCCESS.getMsg();
+        this.message = StatusCodeEnum.SUCCESS.getMsg();
     }
 
-    public Result(Integer code, String msg, T data) {
+    public Result(Integer code, String message, T data) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
-    public Result(Integer code, String msg, T data, Long total) {
+    public Result(Integer code, String message, T data, Long total) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
-    public Result(Integer code, String msg, T data, Long total, Integer pageNum, Integer pageSize) {
+    public Result(Integer code, String message, T data, Long total, Integer pageNum, Integer pageSize) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
@@ -94,8 +94,8 @@ public class Result<T> implements Serializable {
     /**
      * 失败（自定义状态码和消息）
      */
-    public static <T> Result<T> fail(Integer code, String msg) {
-        return new Result<>(code, msg, null);
+    public static <T> Result<T> fail(Integer code, String message) {
+        return new Result<>(code, message, null);
     }
 
     /**

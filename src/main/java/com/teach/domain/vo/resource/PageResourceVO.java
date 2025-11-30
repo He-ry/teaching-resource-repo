@@ -1,5 +1,6 @@
 package com.teach.domain.vo.resource;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -123,6 +124,11 @@ public class PageResourceVO {
          * 资源名称
          */
         private String name;
+
+
+        private String title;
+
+        private String content;
         /**
          * 子子类型
          */

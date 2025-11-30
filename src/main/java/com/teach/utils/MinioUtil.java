@@ -1,5 +1,7 @@
 package com.teach.utils;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.StrUtil;
 import com.teach.config.minio.MinioConfig;
 import io.minio.*;
@@ -15,12 +17,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 @Slf4j
 @Component
 public class MinioUtil {
@@ -30,6 +40,46 @@ public class MinioUtil {
 
     @Resource
     private MinioClient minioClient;
+
+    private static final Map<String, String> MIME_TYPE_MAP = new HashMap();
+
+    static {
+        MIME_TYPE_MAP.put("jpg", "image/jpeg");
+        MIME_TYPE_MAP.put("jpeg", "image/jpeg");
+        MIME_TYPE_MAP.put("png", "image/png");
+        MIME_TYPE_MAP.put("gif", "image/gif");
+        MIME_TYPE_MAP.put("mp4", "video/mp4");
+        MIME_TYPE_MAP.put("avi", "video/x-msvideo");
+        MIME_TYPE_MAP.put("wmv", "video/x-ms-wmv");
+        MIME_TYPE_MAP.put("mpg", "video/mpeg");
+        MIME_TYPE_MAP.put("mov", "video/quicktime");
+        MIME_TYPE_MAP.put("rm", "application/vnd.rn-realmedia");
+        MIME_TYPE_MAP.put("swf", "application/x-shockwave-flash");
+        MIME_TYPE_MAP.put("flv", "video/x-flv");
+        MIME_TYPE_MAP.put("mkv", "video/x-matroska");
+        MIME_TYPE_MAP.put("ico", "image/x-icon");
+        MIME_TYPE_MAP.put("zip", "application/zip");
+        MIME_TYPE_MAP.put("7z", "application/x-7z-compressed");
+        MIME_TYPE_MAP.put("tar", "application/x-tar");
+        MIME_TYPE_MAP.put("gz", "application/gzip");
+        MIME_TYPE_MAP.put("bz2", "application/x-bzip2");
+        MIME_TYPE_MAP.put("pdf", "application/pdf");
+        MIME_TYPE_MAP.put("txt", "text/plain");
+        MIME_TYPE_MAP.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        MIME_TYPE_MAP.put("doc", "application/msword");
+        MIME_TYPE_MAP.put("xls", "application/vnd.ms-excel");
+        MIME_TYPE_MAP.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    }
+
+    public String getMimeType(String fileName) {
+        String extension = this.getFileExtension(fileName);
+        return (String)MIME_TYPE_MAP.getOrDefault(extension, "application/octet-stream");
+    }
+
+    private String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf(46);
+        return lastDotIndex != -1 && lastDotIndex != fileName.length() - 1 ? fileName.substring(lastDotIndex + 1).toLowerCase() : "";
+    }
 
     @PostConstruct
     public void init() {
@@ -57,21 +107,69 @@ public class MinioUtil {
                             .bucket(bucketName)
                             .object(objectName)
                             .stream(inputStream, file.getSize(), -1)
-                            .contentType(file.getContentType())
+                            .contentType(this.getMimeType(originalFileName))
                             .build()
             );
         } catch (Exception e) {
             log.error("上传文件失败", e);
         }
+        String videoCover = "";
+        if (isAudioFile(FileNameUtil.extName(originalFileName))) {
+            File tempFile = FileUtil.createTempFile(UUID.randomUUID().toString(), true);
+            videoCover = getVideoCover(tempFile);
+        }
         return FileInfo.builder()
                 .name(originalFileName)
                 .objectName(objectName)
                 .url(url)
+                .cover(videoCover)
                 .size(file.getSize())
                 .contentType(file.getContentType())
                 .suffix(suffix)
                 .build();
     }
+
+    public String getVideoCover(File videoFile) {
+        String coverUrl = "";
+        String coverName = videoFile.getName().substring(0, videoFile.getName().lastIndexOf('.')) + "_cover.jpg";
+
+        try (FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(videoFile)) {
+            grabber.start();
+
+            // 跳到第 1 秒
+            grabber.setTimestamp(1_000_000);
+
+            Frame frame = grabber.grabImage();
+            if (frame == null) {
+                log.warn("未能抓取到图像帧，尝试前几帧");
+                for (int i = 0; i < 5 && frame == null; i++) {
+                    frame = grabber.grabImage();
+                }
+            }
+            if (frame != null) {
+                // 转为 BufferedImage
+                Java2DFrameConverter converter = new Java2DFrameConverter();
+                BufferedImage bi = converter.convert(frame);
+                // 写入到 ByteArrayOutputStream
+                try (ByteArrayOutputStream bass = new ByteArrayOutputStream()) {
+                    ImageIO.write(bi, "jpg", bass);
+                    ByteArrayInputStream basis = new ByteArrayInputStream(bass.toByteArray());
+                    // 上传到 MinIO
+                    FileInfo fileInfo = uploadFile(basis, coverName);
+                    coverUrl = fileInfo.getUrl();
+                    log.info("封面上传成功: {}", coverUrl);
+                }
+            } else {
+                log.error("未能抓取到有效视频帧: {}", videoFile.getAbsolutePath());
+            }
+
+            grabber.stop();
+        } catch (Exception e) {
+            log.error("生成视频封面失败", e);
+        }
+        return coverUrl;
+    }
+
 
 
     /**
@@ -194,6 +292,18 @@ public class MinioUtil {
                 .build());
     }
 
+    private static boolean isAudioFile(String fileExt) {
+        String[] audioExtensions = new String[]{"wav", "flac", "aac", "mp4", "aiff", "mp3", "wma", "avi", "ogg", "m4a", "mpeg", "wmv", "mov", "mkv"};
+
+        for(String ext : audioExtensions) {
+            if (fileExt.endsWith(ext)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 文件信息类
      */
@@ -208,5 +318,6 @@ public class MinioUtil {
         private  Long size;
         private  String contentType;
         private  String suffix;
+        private  String cover;
     }
 }
